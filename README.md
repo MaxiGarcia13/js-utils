@@ -8,6 +8,7 @@ This project provides lightweight helpers for:
 
 - building class name strings safely
 - debouncing function calls
+- comparing values with deep equality
 - encoding and decoding text values
 - reading and updating URL query parameters in the browser
 
@@ -20,6 +21,9 @@ The goal is to keep these helpers in one package so they can be reused across ap
 
 - `debounce(fn, delay)`
   Returns a debounced version of a function.
+
+- `deepEqual(a, b)`
+  Performs a deep equality comparison for arrays and objects.
 
 - `encodeText(value)` and `decodeText(value)`
   Converts text to and from Base64.
@@ -40,6 +44,7 @@ import {
   cn,
   debounce,
   decodeText,
+  deepEqual,
   encodeText,
   getUrlParam,
   setUrlParams,
@@ -49,8 +54,9 @@ const className = cn('btn', true && 'btn-primary', false && 'hidden');
 const onResize = debounce(() => console.log('resized'), 300);
 const encoded = encodeText('hello');
 const decoded = decodeText(encoded);
+const same = deepEqual({ id: 1, tags: ['a'] }, { id: 1, tags: ['a'] });
 
-console.log(className, decoded, getUrlParam('page'));
+console.log(className, decoded, same, getUrlParam('page'));
 setUrlParams({ page: '2' });
 ```
 

@@ -3,6 +3,16 @@
   "type": "module",
   "version": "0.0.0",
   "description": "JavaScript Utility Functions",
+  "author": "Maximiliano Garcia Mortigliengo",
+  "license": "ISC",
+  "homepage": "https://github.com/MaxiGarcia13/js-utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxiGarcia13/js-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MaxiGarcia13/js-utils/issues"
+  },
   "keywords": [
     "javascript",
     "typescript",
@@ -25,17 +35,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/MaxiGarcia13/js-utils#readme",
-  "bugs": {
-    "url": "https://github.com/MaxiGarcia13/js-utils/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MaxiGarcia13/js-utils.git"
-  },
-  "license": "ISC",
-  "author": "Maximiliano Garcia Mortigliengo",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@maxigarcia/eslint-config": "^1.5.0"
   }
 }

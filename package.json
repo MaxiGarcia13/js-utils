@@ -42,10 +42,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prepublish:npm": "npm run build",
-    "publish:npm": "npm publish --access public"
+    "publish:npm": "npm publish --access public",
+    "test": "vitest"
   },
   "devDependencies": {
     "@maxigarcia/eslint-config": "^1.5.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
   }
 }

@@ -36,10 +36,16 @@
     "access": "public"
   },
   "scripts": {
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "build": "tsc",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint --fix .",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public"
   },
   "devDependencies": {
-    "@maxigarcia/eslint-config": "^1.5.0"
+    "@maxigarcia/eslint-config": "^1.5.0",
+    "typescript": "^6.0.3"
   }
 }

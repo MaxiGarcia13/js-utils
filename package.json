@@ -1,0 +1,41 @@
+{
+  "name": "@maxigarcia/js-utils",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "JavaScript Utility Functions",
+  "keywords": [
+    "javascript",
+    "typescript",
+    "utilities"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/MaxiGarcia13/js-utils#readme",
+  "bugs": {
+    "url": "https://github.com/MaxiGarcia13/js-utils/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxiGarcia13/js-utils.git"
+  },
+  "license": "ISC",
+  "author": "Maximiliano Garcia Mortigliengo",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

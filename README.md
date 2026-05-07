@@ -43,15 +43,15 @@ import {
   encodeText,
   getUrlParam,
   setUrlParams,
-} from "@maxigarcia/js-utils";
+} from '@maxigarcia/js-utils';
 
-const className = cn("btn", true && "btn-primary", false && "hidden");
-const onResize = debounce(() => console.log("resized"), 300);
-const encoded = encodeText("hello");
+const className = cn('btn', true && 'btn-primary', false && 'hidden');
+const onResize = debounce(() => console.log('resized'), 300);
+const encoded = encodeText('hello');
 const decoded = decodeText(encoded);
 
-console.log(className, decoded, getUrlParam("page"));
-setUrlParams({ page: "2" });
+console.log(className, decoded, getUrlParam('page'));
+setUrlParams({ page: '2' });
 ```
 
 ## Development

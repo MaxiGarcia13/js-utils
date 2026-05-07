@@ -1,0 +1,24 @@
+name: Bump version on main
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  lint-and-test:
+    uses: ./.github/workflows/lint-and-test.yml
+
+  bump:
+    needs: lint-and-test
+    uses: MaxiGarcia13/gh-actions/.github/workflows/bump-version.yml@main
+
+  publish:
+    needs: bump
+    uses: MaxiGarcia13/gh-actions/.github/workflows/npm-publish.yml@main
+    secrets: inherit
+    with:
+      command: publish:npm

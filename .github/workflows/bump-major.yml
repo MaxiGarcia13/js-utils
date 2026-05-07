@@ -1,0 +1,23 @@
+name: Bump major on main
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lint-and-test:
+    uses: ./.github/workflows/lint-and-test.yml
+
+  bump:
+    needs: lint-and-test
+    uses: MaxiGarcia13/gh-actions/.github/workflows/bump-major.yml@main
+    secrets: inherit
+
+  publish:
+    needs: bump
+    uses: MaxiGarcia13/gh-actions/.github/workflows/npm-publish.yml@main
+    secrets: inherit
+    with:
+      command: publish:npm

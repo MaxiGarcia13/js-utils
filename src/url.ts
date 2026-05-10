@@ -19,3 +19,20 @@ export function removeUrlParam(key: string) {
   url.searchParams.delete(key);
   window.history.pushState({}, '', url.toString());
 }
+
+export function isValidHttpUrl(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+export function getUrlDomain(url: string): string | null {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
+}

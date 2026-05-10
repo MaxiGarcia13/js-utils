@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { getUrlParam, getUrlParams, removeUrlParam, setUrlParams } from './url';
+import { getUrlDomain, getUrlParam, getUrlParams, isValidHttpUrl, removeUrlParam, setUrlParams } from './url';
 
 it('getUrlParams', () => {
   const search = 'foo=bar&baz=qux';
@@ -57,4 +57,17 @@ it('removeUrlParam', () => {
 
   removeUrlParam('foo');
   expect(window.location.href).toBe('https://example.com/');
+});
+
+it('isValidHttpUrl', () => {
+  expect(isValidHttpUrl('https://example.com')).toBe(true);
+  expect(isValidHttpUrl('http://example.com/path?foo=bar')).toBe(true);
+  expect(isValidHttpUrl('ftp://example.com')).toBe(false);
+  expect(isValidHttpUrl('example.com')).toBe(false);
+});
+
+it('getUrlDomain', () => {
+  expect(getUrlDomain('https://example.com/path')).toBe('example.com');
+  expect(getUrlDomain('https://sub.example.com/path')).toBe('sub.example.com');
+  expect(getUrlDomain('not a valid url')).toBeNull();
 });

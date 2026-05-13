@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { decodeText, encodeText } from './text-decoder';
+import { decodeText, encodeText } from './text-decoder.js';
 
 const text = 'Hello, world!';
 const expectedEncoded = 'SGVsbG8sIHdvcmxkIQ==';

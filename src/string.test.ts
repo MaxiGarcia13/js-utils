@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { capitalize } from './string';
+import { capitalize } from './string.js';
 
 it('capitalize', () => {
   expect(capitalize('hello')).toBe('Hello');

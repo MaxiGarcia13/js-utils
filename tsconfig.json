@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "esnext",
     "rootDir": "src",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "declaration": true,
     "declarationMap": true,

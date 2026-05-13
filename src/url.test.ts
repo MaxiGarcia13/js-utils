@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { getUrlDomain, getUrlParam, getUrlParams, isValidHttpUrl, removeUrlParam, setUrlParams } from './url';
+import { getUrlDomain, getUrlParam, getUrlParams, isValidHttpUrl, removeUrlParam, setUrlParams } from './url.js';
 
 it('getUrlParams', () => {
   const search = 'foo=bar&baz=qux';

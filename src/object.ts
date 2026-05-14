@@ -10,7 +10,7 @@ export function getNestedValue<T>(obj: T, path: string): unknown {
   return current;
 }
 
-export function getFlatObject<T>(
+export function toFlatObject<T>(
   obj: T,
   parentKey?: string,
 ): Record<string, unknown> | T {
@@ -21,7 +21,7 @@ export function getFlatObject<T>(
   return Object.keys(obj).reduce((acc, key) => {
     const path = parentKey ? `${parentKey}.${key}` : key;
     const value = obj[key];
-    const flattened = getFlatObject(value, path);
+    const flattened = toFlatObject(value, path);
     if (isRecord(flattened)) {
       return { ...acc, ...flattened };
     }

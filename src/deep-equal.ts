@@ -1,3 +1,5 @@
+import { isRecord } from './object.js';
+
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length)
@@ -10,8 +12,4 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   }
 
   return a === b;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }

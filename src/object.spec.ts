@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest';
-import { getFlatObject, getNestedValue, isRecord } from './object.js';
+import { getNestedValue, isRecord, toFlatObject } from './object.js';
 
 it('isRecord', () => {
   expect(isRecord({})).toBe(true);
-  expect(isRecord([])).toBe(true);
+  expect(isRecord([])).toBe(false);
   expect(isRecord(null)).toBe(false);
   expect(isRecord(undefined)).toBe(false);
   expect(isRecord(1)).toBe(false);
@@ -31,9 +31,9 @@ it('getNestedValue', () => {
   )).toBe(undefined);
 });
 
-it('getFlatObject', () => {
+it('toFlatObject', () => {
   expect(
-    getFlatObject(
+    toFlatObject(
       {
         a: {
           b: 1,

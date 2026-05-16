@@ -3,13 +3,20 @@ export function getUrlParams() {
 }
 
 export function getUrlParam(key: string) {
-  return getUrlParams().get(key);
+  const params = getUrlParams();
+  const value = params.get(key);
+
+  if (value) {
+    return decodeURIComponent(value);
+  }
+
+  return null;
 }
 
 export function setUrlParams(params: Record<string, string>) {
   const url = new URL(window.location.href);
   for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, value);
+    url.searchParams.set(key, encodeURIComponent(value));
   }
   window.history.pushState({}, '', url.toString());
 }

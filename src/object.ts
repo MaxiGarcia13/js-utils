@@ -1,3 +1,5 @@
+import { removeTrailingCommas, unwrapString } from './string.js';
+
 export function getNestedValue<T>(obj: T, path: string): unknown {
   const keys = path.split('.');
   let current: unknown = obj;
@@ -31,4 +33,19 @@ export function toFlatObject<T>(
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function tryParseJson(value: string): unknown | undefined {
+  try {
+    const fixed = value.replace(
+      /([{,]\s*)([a-z_$][\w$]*)(\s*:)/gi,
+      '$1"$2"$3',
+    );
+    const unwrapped = unwrapString(fixed);
+    const removedTrailingCommas = removeTrailingCommas(unwrapped);
+
+    return JSON.parse(removedTrailingCommas);
+  } catch {
+    return undefined;
+  }
 }

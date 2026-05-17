@@ -1,62 +1,52 @@
 import { expect, it, vi } from 'vitest';
-import { getUrlDomain, getUrlParam, getUrlParams, isValidHttpUrl, removeUrlParam, setUrlParams } from './url.js';
+import {
+  addParamsToUrl,
+  getParamFromUrl,
+  getParamsFromUrl,
+  getUrlDomain,
+  isValidHttpUrl,
+  pushParamsToUrl,
+  removeParamFromUrl,
+} from './url.js';
 
-it('getUrlParams', () => {
-  const search = 'foo=bar&baz=qux';
+it('getParamsFromUrl', () => {
+  const params = getParamsFromUrl('https://example.com?foo=bar&baz=qux');
 
-  vi.stubGlobal('window', {
-    location: {
-      search,
-    },
-  });
-
-  const params = getUrlParams();
-
-  expect(params).toEqual(new URLSearchParams(search));
+  expect(params.get('foo')).toBe('bar');
+  expect(params.get('baz')).toBe('qux');
 });
 
-it('getUrlParam', () => {
-  vi.stubGlobal('window', {
-    location: {
-      search: 'foo=bar&baz=qux',
-    },
-  });
+it('getParamFromUrl', () => {
+  const param = getParamFromUrl('foo', 'https://example.com?foo=bar&baz=qux');
 
-  const param = getUrlParam('foo');
   expect(param).toBe('bar');
 });
 
-it('setUrlParams', () => {
-  vi.stubGlobal('window', {
-    location: {
-      href: 'https://example.com',
-    },
-    history: {
-      pushState: vi.fn((_, __, url: string) => {
-        window.location.href = url;
-      }),
-    },
-  });
+it('addParamsToUrl', () => {
+  const url = addParamsToUrl(
+    { foo: 'qux', baz: 'qux' },
+    'https://example.com',
+  );
 
-  setUrlParams({ foo: 'qux', baz: 'qux' });
-
-  expect(window.location.href).toBe('https://example.com/?foo=qux&baz=qux');
+  expect(url).toBe('https://example.com/?foo=qux&baz=qux');
 });
 
-it('removeUrlParam', () => {
+it('removeParamFromUrl', () => {
+  const url = removeParamFromUrl('foo', 'https://example.com?foo=bar');
+
+  expect(url).toBe('https://example.com/');
+});
+
+it('pushParamsToUrl', () => {
+  const pushState = vi.fn();
+
   vi.stubGlobal('window', {
-    location: {
-      href: 'https://example.com',
-    },
-    history: {
-      pushState: vi.fn((_, __, url: string) => {
-        window.location.href = url;
-      }),
-    },
+    history: { pushState },
   });
 
-  removeUrlParam('foo');
-  expect(window.location.href).toBe('https://example.com/');
+  pushParamsToUrl('https://example.com/?foo=bar');
+
+  expect(pushState).toHaveBeenCalledWith({}, '', 'https://example.com/?foo=bar');
 });
 
 it('isValidHttpUrl', () => {

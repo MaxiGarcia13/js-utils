@@ -1,9 +1,10 @@
-export function getUrlParams() {
-  return new URLSearchParams(window.location.search);
+export function getParamsFromUrl(url: string = window.location.href) {
+  return new URLSearchParams(new URL(url).search);
 }
 
-export function getUrlParam(key: string) {
-  const params = getUrlParams();
+export function getParamFromUrl(key: string, url: string = window.location.href) {
+  const params = getParamsFromUrl(url);
+
   const value = params.get(key);
 
   if (value) {
@@ -13,18 +14,26 @@ export function getUrlParam(key: string) {
   return null;
 }
 
-export function setUrlParams(params: Record<string, string>) {
-  const url = new URL(window.location.href);
+export function addParamsToUrl(params: Record<string, string>, url: string = window.location.href) {
+  const urlObject = new URL(url);
+
   for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, encodeURIComponent(value));
+    urlObject.searchParams.set(key, encodeURIComponent(value));
   }
-  window.history.pushState({}, '', url.toString());
+
+  return urlObject.toString();
 }
 
-export function removeUrlParam(key: string) {
-  const url = new URL(window.location.href);
-  url.searchParams.delete(key);
-  window.history.pushState({}, '', url.toString());
+export function pushParamsToUrl(url: string) {
+  window.history.pushState({}, '', url);
+}
+
+export function removeParamFromUrl(key: string, url: string = window.location.href) {
+  const urlObject = new URL(url);
+
+  urlObject.searchParams.delete(key);
+
+  return urlObject.toString();
 }
 
 export function isValidHttpUrl(url: string) {

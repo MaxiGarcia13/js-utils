@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { getNestedValue, isRecord, toFlatObject } from './object.js';
+import { getNestedValue, isRecord, toFlatObject, tryParseJson } from './object.js';
 
 it('isRecord', () => {
   expect(isRecord({})).toBe(true);
@@ -48,4 +48,13 @@ it('toFlatObject', () => {
       },
     ),
   ).toEqual({ 'a.b': 1, 'c': 2, 'd.e.f': 3, 'd.e.g': 4 });
+});
+
+it('tryParseJson', () => {
+  expect(tryParseJson('{"a": 1}')).toEqual({ a: 1 });
+  expect(tryParseJson('{a: 1}')).toEqual({ a: 1 });
+  expect(tryParseJson('{a: 1, b: 2,}')).toEqual({ a: 1, b: 2 });
+  expect(tryParseJson('[1, 2, 3,]')).toEqual([1, 2, 3]);
+  expect(tryParseJson('{ nested: { value: true } }')).toEqual({ nested: { value: true } });
+  expect(tryParseJson('not json')).toBeUndefined();
 });

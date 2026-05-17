@@ -1,7 +1,7 @@
 {
   "name": "@maxigarcia/js-utils",
   "type": "module",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "JavaScript Utility Functions",
   "author": "Maximiliano Garcia Mortigliengo",
   "license": "ISC",

@@ -26,15 +26,15 @@ import {
   encodeText,
   getParamFromUrl,
   tryParseJson,
-} from "@maxigarcia/js-utils";
+} from '@maxigarcia/js-utils';
 
-const className = cn("btn", isActive && "btn-active", null, "w-full");
-const onResize = debounce(() => console.log("resized"), 300);
+const className = cn('btn', isActive && 'btn-active', null, 'w-full');
+const onResize = debounce(() => console.log('resized'), 300);
 const same = deepEqual({ a: [1] }, { a: [1] });
 
-const token = encodeText("hello"); // Base64 (UTF-8 safe)
-const page = getParamFromUrl("page");
-const nextUrl = addParamsToUrl({ page: "2" });
+const token = encodeText('hello'); // Base64 (UTF-8 safe)
+const page = getParamFromUrl('page');
+const nextUrl = addParamsToUrl({ page: '2' });
 
 const data = tryParseJson(`{ name: "Ada", tags: ["js"], }`); // lenient parse
 ```
@@ -46,7 +46,7 @@ const data = tryParseJson(`{ name: "Ada", tags: ["js"], }`); // lenient parse
 Joins truthy class fragments into one string. Falsy values (`false`, `null`, `undefined`, `0`, `''`) are dropped; booleans used as flags are ignored.
 
 ```ts
-cn("card", isOpen && "card--open", disabled && "card--disabled");
+cn('card', isOpen && 'card--open', disabled && 'card--disabled');
 // → "card card--open"
 ```
 
@@ -104,9 +104,9 @@ All URL helpers accept an optional `url` string; if omitted, they use `window.lo
 Example: update the current page’s query without a full navigation:
 
 ```ts
-import { addParamsToUrl, pushParamsToUrl } from "@maxigarcia/js-utils";
+import { addParamsToUrl, pushParamsToUrl } from '@maxigarcia/js-utils';
 
-const url = addParamsToUrl({ tab: "settings", page: "1" });
+const url = addParamsToUrl({ tab: 'settings', page: '1' });
 pushParamsToUrl(url);
 ```
 

@@ -37,11 +37,11 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function tryParseJson(value: string): unknown | undefined {
   try {
-    const fixed = value.replace(
+    const addedQuotes = value.replace(
       /([{,]\s*)([a-z_$][\w$]*)(\s*:)/gi,
       '$1"$2"$3',
     );
-    const unwrapped = unwrapString(fixed);
+    const unwrapped = unwrapString(addedQuotes);
     const removedTrailingCommas = removeTrailingCommas(unwrapped);
 
     return JSON.parse(removedTrailingCommas);

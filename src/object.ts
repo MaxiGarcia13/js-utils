@@ -35,7 +35,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export function tryParseJson(value: string): unknown | undefined {
+export function tryParseJson<T = unknown>(value: string): T | undefined {
   try {
     const addedQuotes = value.replace(
       /([{,]\s*)([a-z_$][\w$]*)(\s*:)/gi,

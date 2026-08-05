@@ -38,3 +38,20 @@ it('debounce resolves with fn result', async () => {
   expect(fn).toHaveBeenCalledTimes(1);
   expect(fn).toHaveBeenCalledWith('hello');
 });
+
+it('debounce flattens promise return type', async () => {
+  vi.useFakeTimers();
+
+  const delay = 100;
+  const fn = vi.fn(async (value: string) => value.toUpperCase());
+  const debouncedFn = debounce(fn, delay);
+
+  const promise = debouncedFn('hello');
+
+  expect(fn).toHaveBeenCalledTimes(0);
+
+  vi.advanceTimersByTime(delay);
+
+  await expect(promise).resolves.toBe('HELLO');
+  expect(fn).toHaveBeenCalledTimes(1);
+});

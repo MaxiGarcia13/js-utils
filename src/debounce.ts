@@ -4,8 +4,9 @@ export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(fn
   return function (...args: Parameters<T>) {
     clearTimeout(timeout);
 
-    timeout = setTimeout(() => {
-      fn(...args);
-    }, delay);
+    return new Promise<ReturnType<T>>((resolve) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => resolve(fn(...args)), delay);
+    });
   };
 }

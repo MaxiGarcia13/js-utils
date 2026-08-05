@@ -43,7 +43,8 @@
     "lint:fix": "eslint --fix .",
     "prepublish:npm": "npm run build",
     "publish:npm": "npm publish --access public",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@maxigarcia/eslint-config": "^1.5.0",

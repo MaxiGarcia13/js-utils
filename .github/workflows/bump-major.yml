@@ -16,8 +16,19 @@ jobs:
     secrets: inherit
 
   publish:
+    name: Publish to npm
+    if: ${{ needs.bump.outputs.tag != '' }}
     needs: bump
     uses: MaxiGarcia13/gh-actions/.github/workflows/npm-publish.yml@main
     secrets: inherit
     with:
       command: publish:npm
+
+  release-notes:
+    name: Create Release Notes
+    if: ${{ needs.bump.outputs.tag != '' }}
+    needs: bump
+    uses: MaxiGarcia13/gh-actions/.github/workflows/create-release-notes.yml@main
+    with:
+      tag: ${{ needs.bump.outputs.tag }}
+      default_branch: main

@@ -16,7 +16,7 @@ export function createStorage<T>(name: string, storage: Storage = defaultStorage
   };
 }
 
-function createMemoryStorage(): Storage {
+export function createMemoryStorage(): Storage {
   const store = new Map<string, string>();
 
   return {

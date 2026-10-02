@@ -1,24 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createStorage } from './storage';
-
-function createMemoryStorage(): Storage {
-  const store = new Map<string, string>();
-
-  return {
-    get length() {
-      return store.size;
-    },
-    clear: () => store.clear(),
-    getItem: (key: string) => store.get(key) ?? null,
-    key: (index: number) => [...store.keys()][index] ?? null,
-    removeItem: (key: string) => {
-      store.delete(key);
-    },
-    setItem: (key: string, value: string) => {
-      store.set(key, value);
-    },
-  };
-}
+import { createMemoryStorage, createStorage } from './storage';
 
 describe('createStorage', () => {
   let memoryStorage: Storage;

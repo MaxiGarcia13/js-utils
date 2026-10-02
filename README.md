@@ -47,7 +47,7 @@ const data = tryParseJson(`{ name: "Ada", tags: ["js"], }`); // lenient parse
 
 ## API
 
-### Arrays — `uniqueBy`
+### `uniqueBy`
 
 Returns a new array with the first occurrence of each item kept, keyed by `key`. Values are compared with `deepEqual`, so object and array keys work.
 
@@ -56,7 +56,7 @@ uniqueBy([{ id: 1 }, { id: 2 }, { id: 1 }], 'id');
 // → [{ id: 1 }, { id: 2 }]
 ```
 
-### Classes — `cn`
+### `cn`
 
 Joins truthy class fragments into one string. Falsy values (`false`, `null`, `undefined`, `0`, `''`) are dropped; booleans used as flags are ignored.
 
@@ -65,7 +65,7 @@ cn('card', isOpen && 'card--open', disabled && 'card--disabled');
 // → "card card--open"
 ```
 
-### Timing — `debounce`
+### `debounce`
 
 Returns a debounced wrapper that delays calling `fn` until `delay` ms have passed without another invocation.
 
@@ -73,7 +73,7 @@ Returns a debounced wrapper that delays calling `fn` until `delay` ms have passe
 const save = debounce((value: string) => persist(value), 500);
 ```
 
-### Equality — `deepEqual`
+### `deepEqual`
 
 Recursively compares two values. Arrays are compared by length and element; plain objects by own keys and values. Primitives use `===`.
 
@@ -81,7 +81,7 @@ Recursively compares two values. Arrays are compared by length and element; plai
 deepEqual({ x: [1, { y: 2 }] }, { x: [1, { y: 2 }] }); // true
 ```
 
-### Storage — `createStorage`
+### `createStorage`
 
 Creates a namespaced helper around `localStorage` (or any `Storage`). Keys are prefixed as `app-storage-${name}`.
 
@@ -107,11 +107,11 @@ userStorage.clear();
 | `getJson()`      | Parses and returns the stored JSON, or `null`. |
 | `setJson(value)` | Stringifies and stores a typed value.          |
 
-### Text — `encodeText` / `decodeText`
+### `encodeText` / `decodeText`
 
 Encodes and decodes strings with **UTF-8** via `TextEncoder` / `TextDecoder` and Base64 (`btoa` / `atob`), so non-ASCII text round-trips correctly.
 
-### Strings
+### String helpers
 
 | Function                      | Description                                                                                   |
 | ----------------------------- | --------------------------------------------------------------------------------------------- |
@@ -119,7 +119,7 @@ Encodes and decodes strings with **UTF-8** via `TextEncoder` / `TextDecoder` and
 | `unwrapString(value)`         | Strips one or more layers of surrounding single or double quotes.                             |
 | `removeTrailingCommas(value)` | Removes trailing commas before `}` or `]` in a string (useful before JSON parsing).           |
 
-### Objects
+### Object helpers
 
 | Function                        | Description                                                                                                                           |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -128,7 +128,7 @@ Encodes and decodes strings with **UTF-8** via `TextEncoder` / `TextDecoder` and
 | `toFlatObject(obj, parentKey?)` | Flattens nested objects into dot-notation keys.                                                                                       |
 | `tryParseJson(value)`           | Parses JSON after normalizing unquoted keys, unwrapping quoted strings, and removing trailing commas. Returns `undefined` on failure. |
 
-### URLs
+### URL helpers
 
 Helpers that read or mutate the current page accept an optional `url` string; if omitted, they use `window.location.href`.
 

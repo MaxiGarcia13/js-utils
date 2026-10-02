@@ -24,11 +24,21 @@ it('getParamFromUrl', () => {
 
 it('addParamsToUrl', () => {
   const url = addParamsToUrl(
-    { foo: 'qux', baz: 'qux' },
     'https://example.com',
+    {
+      foo: 'qux',
+      baz: 'qux',
+      qux: null,
+      quux: undefined,
+      corge: 0,
+      grault: 1,
+      garply: true,
+      waldo: false,
+      fred: 'string',
+    },
   );
 
-  expect(url).toBe('https://example.com/?foo=qux&baz=qux');
+  expect(url).toBe('https://example.com?foo=qux&baz=qux&corge=0&grault=1&garply=true&waldo=false&fred=string');
 });
 
 it('removeParamFromUrl', () => {

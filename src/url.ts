@@ -14,16 +14,6 @@ export function getParamFromUrl(key: string, url: string = window.location.href)
   return null;
 }
 
-export function addParamsToUrl(params: Record<string, string>, url: string = window.location.href) {
-  const urlObject = new URL(url);
-
-  for (const [key, value] of Object.entries(params)) {
-    urlObject.searchParams.set(key, encodeURIComponent(value));
-  }
-
-  return urlObject.toString();
-}
-
 export function pushParamsToUrl(url: string) {
   window.history.pushState({}, '', url);
 }
@@ -51,4 +41,34 @@ export function getUrlDomain(url: string): string | null {
   } catch {
     return null;
   }
+}
+
+type Params = Record<string, string | number | boolean | undefined | null>;
+
+export function addParamsToUrl(baseUrl: string, params: Params = {}) {
+  const paramsString = parseParams(params);
+
+  if (paramsString) {
+    return `${baseUrl}?${paramsString}`;
+  }
+
+  return baseUrl;
+}
+
+function parseParams(params: Params) {
+  const searchParams = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(params)) {
+    const stringValue = value?.toString().trim();
+
+    if (stringValue && stringValue.length > 0) {
+      searchParams.set(key, stringValue);
+    }
+  }
+
+  if (searchParams.size > 0) {
+    return searchParams.toString();
+  }
+
+  return null;
 }

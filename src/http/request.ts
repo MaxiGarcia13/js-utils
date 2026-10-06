@@ -1,23 +1,26 @@
 import { throwHttpError } from './http-error.js';
 
-const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-} as const;
+function resolveSignal(
+  internal: AbortSignal,
+  external?: AbortSignal | null,
+): AbortSignal {
+  if (!external) {
+    return internal;
+  }
+
+  return AbortSignal.any([internal, external]);
+}
 
 export async function request<T>(
   url: string,
   signal: AbortSignal,
   options: RequestInit = {},
-  data?: unknown,
 ): Promise<T> {
+  const { signal: externalSignal, ...rest } = options;
+
   const res = await fetch(url, {
-    signal,
-    ...options,
-    headers: {
-      ...DEFAULT_HEADERS,
-      ...options.headers,
-    },
-    ...(data !== undefined ? { body: JSON.stringify(data) } : {}),
+    ...rest,
+    signal: resolveSignal(signal, externalSignal),
   });
 
   if (!res.ok) {

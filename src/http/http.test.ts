@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { HttpError, isHttpError, throwHttpError } from './http-error.js';
 import { http } from './http.js';
 
 afterEach(() => {
@@ -19,72 +18,6 @@ function mockFetch(res: Partial<Response> & { json?: () => Promise<unknown> }) {
   return fetchMock;
 }
 
-describe('isHttpError', () => {
-  it('returns true for HttpError instances', () => {
-    expect(isHttpError(new HttpError(404, 'Not found'))).toBe(true);
-  });
-
-  it('returns true for objects with status and message', () => {
-    expect(isHttpError({ status: 500, message: 'Server error' })).toBe(true);
-  });
-
-  it('returns false for unrelated values', () => {
-    expect(isHttpError(null)).toBe(false);
-    expect(isHttpError('error')).toBe(false);
-    expect(isHttpError({ message: 'missing status' })).toBe(false);
-    expect(isHttpError({ status: 400 })).toBe(false);
-  });
-});
-
-describe('throwHttpError', () => {
-  it('throws HttpError with body message when body has status and message', async () => {
-    const res = {
-      ok: false,
-      status: 404,
-      statusText: 'Not Found',
-      json: async () => ({ status: 404, message: 'User not found' }),
-    } as Response;
-
-    await expect(throwHttpError(res)).rejects.toMatchObject({
-      name: 'HttpError',
-      status: 404,
-      message: 'User not found',
-    });
-  });
-
-  it('throws HttpError with statusText when body is not an http error shape', async () => {
-    const res = {
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
-      json: async () => ({ error: 'boom' }),
-    } as Response;
-
-    await expect(throwHttpError(res)).rejects.toMatchObject({
-      name: 'HttpError',
-      status: 500,
-      message: 'Internal Server Error',
-    });
-  });
-
-  it('falls back to HTTP status when statusText is empty and body is invalid', async () => {
-    const res = {
-      ok: false,
-      status: 502,
-      statusText: '',
-      json: async () => {
-        throw new Error('invalid json');
-      },
-    } as unknown as Response;
-
-    await expect(throwHttpError(res)).rejects.toMatchObject({
-      name: 'HttpError',
-      status: 502,
-      message: 'HTTP 502',
-    });
-  });
-});
-
 describe('http', () => {
   it('get returns parsed json', async () => {
     const fetchMock = mockFetch({
@@ -94,7 +27,6 @@ describe('http', () => {
     await expect(http('/api/users/1').get<{ id: number }>()).resolves.toEqual({ id: 1 });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
-      headers: { 'Content-Type': 'application/json' },
       signal: expect.any(AbortSignal),
     }));
   });
@@ -104,7 +36,9 @@ describe('http', () => {
       json: async () => ({ id: 2, name: 'Max' }),
     });
 
-    await expect(http('/api/users').post({ name: 'Max' })).resolves.toEqual({ id: 2, name: 'Max' });
+    await expect(http('/api/users').post({
+      body: { name: 'Max' },
+    })).resolves.toEqual({ id: 2, name: 'Max' });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users', expect.objectContaining({
       method: 'POST',
@@ -113,12 +47,46 @@ describe('http', () => {
     }));
   });
 
+  it('post passes FormData through without json content-type', async () => {
+    const fetchMock = mockFetch({
+      json: async () => ({ ok: true }),
+    });
+    const formData = new FormData();
+    formData.append('file', 'value');
+
+    await http('/api/upload').post({ body: formData });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
+      method: 'POST',
+      body: formData,
+      headers: {},
+    }));
+  });
+
+  it('post passes Blob through without stringifying', async () => {
+    const fetchMock = mockFetch({
+      json: async () => ({ ok: true }),
+    });
+    const blob = new Blob(['hello'], { type: 'text/plain' });
+
+    await http('/api/upload').post({
+      body: blob,
+      headers: { 'Content-Type': 'text/plain' },
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
+      method: 'POST',
+      body: blob,
+      headers: { 'Content-Type': 'text/plain' },
+    }));
+  });
+
   it('put sends json body with PUT method', async () => {
     const fetchMock = mockFetch({
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').put({ name: 'Updated' });
+    await http('/api/users/1').put({ body: { name: 'Updated' } });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PUT',
@@ -131,7 +99,7 @@ describe('http', () => {
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').patch({ name: 'Patched' });
+    await http('/api/users/1').patch({ body: { name: 'Patched' } });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PATCH',
@@ -182,6 +150,51 @@ describe('http', () => {
     const client = http('/api/slow');
     const pending = client.get();
     client.abort();
+
+    expect(capturedSignal?.aborted).toBe(true);
+    await expect(pending).resolves.toEqual({});
+  });
+
+  it('allows new requests after abort', async () => {
+    const signals: AbortSignal[] = [];
+
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: async () => ({ ok: true }),
+      };
+    }));
+
+    const client = http('/api/items');
+    const first = client.get();
+    client.abort();
+
+    expect(signals[0]?.aborted).toBe(true);
+
+    await expect(client.get()).resolves.toEqual({ ok: true });
+    expect(signals[1]?.aborted).toBe(false);
+    await first;
+  });
+
+  it('aborts when the caller signal aborts', async () => {
+    let capturedSignal: AbortSignal | undefined;
+
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      capturedSignal = init?.signal ?? undefined;
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: async () => ({}),
+      };
+    }));
+
+    const caller = new AbortController();
+    const pending = http('/api/items').get({ signal: caller.signal });
+    caller.abort();
 
     expect(capturedSignal?.aborted).toBe(true);
     await expect(pending).resolves.toEqual({});

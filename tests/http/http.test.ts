@@ -124,4 +124,79 @@ describe('http', () => {
     expect(signals[1]?.aborted).toBe(false);
     await first;
   });
+
+  it('aborts the previous request when called again with the same url and method', async () => {
+    const signals: AbortSignal[] = [];
+
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers({ 'content-type': 'application/json' }),
+        text: async () => JSON.stringify({ ok: true }),
+      };
+    }));
+
+    const client = http('/api/items');
+    const first = client.get();
+    const second = client.get();
+
+    expect(signals[0]?.aborted).toBe(true);
+    expect(signals[1]?.aborted).toBe(false);
+
+    await first;
+    await second;
+  });
+
+  it('does not abort a different method on the same url', async () => {
+    const signals: AbortSignal[] = [];
+
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers({ 'content-type': 'application/json' }),
+        text: async () => JSON.stringify({ ok: true }),
+      };
+    }));
+
+    const client = http('/api/items');
+    const get = client.get();
+    const post = client.post({ body: { name: 'a' } });
+
+    expect(signals[0]?.aborted).toBe(false);
+    expect(signals[1]?.aborted).toBe(false);
+
+    await get;
+    await post;
+  });
+
+  it('does not abort when params produce a different url', async () => {
+    const signals: AbortSignal[] = [];
+
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      signals.push(init!.signal!);
+      return {
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers({ 'content-type': 'application/json' }),
+        text: async () => JSON.stringify({ ok: true }),
+      };
+    }));
+
+    const client = http('/api/items');
+    const first = client.get({ params: { q: 'a' } });
+    const second = client.get({ params: { q: 'b' } });
+
+    expect(signals[0]?.aborted).toBe(false);
+    expect(signals[1]?.aborted).toBe(false);
+
+    await first;
+    await second;
+  });
 });

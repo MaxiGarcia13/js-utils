@@ -1,13 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { HttpError, isHttpError, throwHttpError } from './http-error.js';
+import {
+  AbortRequestError,
+  HttpError,
+  isAbortRequestError,
+  isHttpError,
+  isNetworkError,
+  NetworkError,
+  throwHttpError,
+} from './http-error.js';
 
 describe('isHttpError', () => {
   it('returns true for HttpError instances', () => {
     expect(isHttpError(new HttpError(404, 'Not found'))).toBe(true);
   });
 
-  it('returns true for objects with status and message', () => {
-    expect(isHttpError({ status: 500, message: 'Server error' })).toBe(true);
+  it('returns false for plain objects with status and message', () => {
+    expect(isHttpError({ status: 500, message: 'Server error' })).toBe(false);
   });
 
   it('returns false for unrelated values', () => {
@@ -15,6 +23,30 @@ describe('isHttpError', () => {
     expect(isHttpError('error')).toBe(false);
     expect(isHttpError({ message: 'missing status' })).toBe(false);
     expect(isHttpError({ status: 400 })).toBe(false);
+    expect(isHttpError(new NetworkError())).toBe(false);
+    expect(isHttpError(new AbortRequestError())).toBe(false);
+  });
+});
+
+describe('isNetworkError', () => {
+  it('returns true for NetworkError instances', () => {
+    expect(isNetworkError(new NetworkError())).toBe(true);
+  });
+
+  it('returns false for other errors', () => {
+    expect(isNetworkError(new HttpError(500, 'fail'))).toBe(false);
+    expect(isNetworkError(new AbortRequestError())).toBe(false);
+  });
+});
+
+describe('isAbortRequestError', () => {
+  it('returns true for AbortRequestError instances', () => {
+    expect(isAbortRequestError(new AbortRequestError())).toBe(true);
+  });
+
+  it('returns false for other errors', () => {
+    expect(isAbortRequestError(new HttpError(500, 'fail'))).toBe(false);
+    expect(isAbortRequestError(new NetworkError())).toBe(false);
   });
 });
 
@@ -34,7 +66,22 @@ describe('throwHttpError', () => {
     });
   });
 
-  it('throws HttpError with statusText when body is not an http error shape', async () => {
+  it('throws HttpError with body message when body only has message', async () => {
+    const res = {
+      ok: false,
+      status: 400,
+      statusText: 'Bad Request',
+      json: async () => ({ message: 'Invalid email' }),
+    } as Response;
+
+    await expect(throwHttpError(res)).rejects.toMatchObject({
+      name: 'HttpError',
+      status: 400,
+      message: 'Invalid email',
+    });
+  });
+
+  it('throws HttpError with statusText when body has no message', async () => {
     const res = {
       ok: false,
       status: 500,

@@ -36,6 +36,48 @@ describe('http', () => {
     await expect(http('/api/users/1').get()).resolves.toBeUndefined();
   });
 
+  it('returns undefined when content-type is not json', async () => {
+    mockFetch({
+      status: 200,
+      headers: { 'content-type': 'text/plain' },
+      text: async () => 'not json',
+    });
+
+    await expect(http('/api/users/1').get()).resolves.toBeUndefined();
+  });
+
+  it('parses json when content-type is missing', async () => {
+    mockFetch({
+      status: 200,
+      headers: {},
+      text: async () => JSON.stringify({ id: 1 }),
+    });
+
+    await expect(http('/api/users/1').get()).resolves.toEqual({ id: 1 });
+  });
+
+  it('throws NetworkError when fetch fails', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new TypeError('Failed to fetch');
+    }));
+
+    await expect(http('/api/users').get()).rejects.toMatchObject({
+      name: 'NetworkError',
+      message: 'Network request failed',
+    });
+  });
+
+  it('throws AbortRequestError when fetch is aborted', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new DOMException('The operation was aborted.', 'AbortError');
+    }));
+
+    await expect(http('/api/users').get()).rejects.toMatchObject({
+      name: 'AbortRequestError',
+      message: 'Request aborted',
+    });
+  });
+
   it('abort aborts the request signal', async () => {
     let capturedSignal: AbortSignal | undefined;
 
@@ -45,6 +87,7 @@ describe('http', () => {
         ok: true,
         status: 200,
         statusText: 'OK',
+        headers: new Headers({ 'content-type': 'application/json' }),
         text: async () => '{}',
       };
     }));
@@ -66,6 +109,7 @@ describe('http', () => {
         ok: true,
         status: 200,
         statusText: 'OK',
+        headers: new Headers({ 'content-type': 'application/json' }),
         text: async () => JSON.stringify({ ok: true }),
       };
     }));

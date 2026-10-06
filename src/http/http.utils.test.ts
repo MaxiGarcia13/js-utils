@@ -5,10 +5,19 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+function createHeaders(init?: HeadersInit): Headers {
+  if (init === undefined) {
+    return new Headers({ 'content-type': 'application/json' });
+  }
+
+  return new Headers(init);
+}
+
 export function mockFetch(
-  res: Partial<Response> & {
+  res: Omit<Partial<Response>, 'headers' | 'json' | 'text'> & {
     json?: () => Promise<unknown>;
     text?: () => Promise<string>;
+    headers?: HeadersInit;
   } = {},
 ) {
   const jsonFn = res.json ?? (async () => ({}));
@@ -17,11 +26,14 @@ export function mockFetch(
     return data === undefined ? '' : JSON.stringify(data);
   });
 
+  const { headers: headersInit, ...rest } = res;
+
   const fetchMock = vi.fn().mockResolvedValue({
     ok: true,
     status: 200,
     statusText: 'OK',
-    ...res,
+    ...rest,
+    headers: createHeaders(headersInit),
     json: jsonFn,
     text: textFn,
   });

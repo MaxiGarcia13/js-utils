@@ -1,10 +1,6 @@
-import type { BodyOptions } from './serialize-body.js';
+import type { HttpOptions, HttpOptionsWithBody } from './type.js';
 import { request } from './request.js';
 import { serializeBodyOptions } from './serialize-body.js';
-
-export type HttpOptions = Omit<RequestInit, 'method' | 'body'>;
-export type HttpBodyOptions = BodyOptions;
-export type { BodyOptions, JsonBody } from './serialize-body.js';
 
 export function http(url: string) {
   const controllers = new Set<AbortController>();
@@ -19,19 +15,19 @@ export function http(url: string) {
   }
 
   return {
-    get<T>(options: Omit<HttpOptions, 'body'> = {}) {
+    get<T>(options: HttpOptions = {}) {
       return run<T>(options);
     },
-    post<T>(options: HttpBodyOptions = {}) {
+    post<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'POST' });
     },
-    put<T>(options: HttpBodyOptions = {}) {
+    put<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'PUT' });
     },
-    delete<T>(options: Omit<HttpOptions, 'body'> = {}) {
+    delete<T>(options: HttpOptions = {}) {
       return run<T>({ ...options, method: 'DELETE' });
     },
-    patch<T>(options: HttpBodyOptions = {}) {
+    patch<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'PATCH' });
     },
     abort() {

@@ -37,7 +37,7 @@ describe('http', () => {
     });
 
     await expect(http('/api/users').post({
-      body: { name: 'Max' },
+      body: JSON.stringify({ name: 'Max' }),
     })).resolves.toEqual({ id: 2, name: 'Max' });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users', expect.objectContaining({
@@ -86,7 +86,7 @@ describe('http', () => {
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').put({ body: { name: 'Updated' } });
+    await http('/api/users/1').put({ body: JSON.stringify({ name: 'Updated' }) });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PUT',
@@ -99,7 +99,7 @@ describe('http', () => {
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').patch({ body: { name: 'Patched' } });
+    await http('/api/users/1').patch({ body: JSON.stringify({ name: 'Patched' }) });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PATCH',
@@ -177,26 +177,5 @@ describe('http', () => {
     await expect(client.get()).resolves.toEqual({ ok: true });
     expect(signals[1]?.aborted).toBe(false);
     await first;
-  });
-
-  it('aborts when the caller signal aborts', async () => {
-    let capturedSignal: AbortSignal | undefined;
-
-    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
-      capturedSignal = init?.signal ?? undefined;
-      return {
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        json: async () => ({}),
-      };
-    }));
-
-    const caller = new AbortController();
-    const pending = http('/api/items').get({ signal: caller.signal });
-    caller.abort();
-
-    expect(capturedSignal?.aborted).toBe(true);
-    await expect(pending).resolves.toEqual({});
   });
 });

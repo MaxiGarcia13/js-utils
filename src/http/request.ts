@@ -5,10 +5,8 @@ export async function request<T>(
   signal: AbortSignal,
   options: RequestInit = {},
 ): Promise<T> {
-  const { ...rest } = options;
-
   const res = await fetch(url, {
-    ...rest,
+    ...options,
     signal,
   });
 

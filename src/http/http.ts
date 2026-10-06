@@ -1,34 +1,10 @@
 import type { HttpOptions, HttpOptionsWithBody } from './types.js';
-import { addParamsToUrl } from '../url/index.js';
-import { request } from './request.js';
+import { createHttpRunners } from './runners.js';
 import { serializeBodyOptions } from './serialize-body.js';
+import { createHttpStream } from './stream.js';
 
 export function http(url: string) {
-  const controllers = new Map<string, AbortController>();
-
-  async function run<T>({
-    params,
-    method = 'GET',
-    ...options
-  }: RequestInit & Pick<HttpOptions, 'params'> = {}) {
-    const finalUrl = addParamsToUrl(url, params);
-    const key = `${method}:${finalUrl}`;
-
-    controllers.get(key)?.abort();
-
-    const controller = new AbortController();
-    controllers.set(key, controller);
-
-    return request<T>(
-      finalUrl,
-      controller.signal,
-      { ...options, method },
-    ).finally(() => {
-      if (controllers.get(key) === controller) {
-        controllers.delete(key);
-      }
-    });
-  }
+  const { run, abort, begin, release } = createHttpRunners(url);
 
   return {
     get<T>(options: HttpOptions = {}) {
@@ -46,11 +22,7 @@ export function http(url: string) {
     patch<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'PATCH' });
     },
-    abort() {
-      for (const controller of controllers.values()) {
-        controller.abort();
-      }
-      controllers.clear();
-    },
+    stream: createHttpStream(url, { begin, release }),
+    abort,
   };
 }

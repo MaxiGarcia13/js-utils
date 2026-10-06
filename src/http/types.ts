@@ -9,3 +9,17 @@ export type HttpBody = RequestInit['body'] | Record<string, unknown> | readonly 
 export type HttpOptionsWithBody = HttpOptions & {
   body?: HttpBody;
 };
+
+export type StreamFormat = 'bytes' | 'ndjson' | 'sse';
+
+export interface SseEvent {
+  event?: string;
+  data: string;
+  id?: string;
+  retry?: number;
+}
+
+export type StreamOptions = HttpOptionsWithBody & {
+  method?: string;
+  format?: StreamFormat;
+};

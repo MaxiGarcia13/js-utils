@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { http } from './http.js';
-import { mockFetch } from './http.utils.test.js';
+import { mockFetch } from './http.utils.js';
 
 describe('http.post', () => {
   it('sends json body with POST method', async () => {

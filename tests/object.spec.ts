@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { getNestedValue, isRecord, toFlatObject, tryParseJson } from './object.js';
+import { getNestedValue, isRecord, toFlatObject, tryParseJson } from '../src/object.js';
 
 it('isRecord', () => {
   expect(isRecord({})).toBe(true);

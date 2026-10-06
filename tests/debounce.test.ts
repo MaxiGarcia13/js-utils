@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { debounce } from './debounce.js';
+import { debounce } from '../src/debounce.js';
 
 it('debounce', () => {
   vi.useFakeTimers();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { http } from './http.js';
+import { http } from '../../src/http/http.js';
 import { mockFetch } from './http.utils.js';
 
 describe('http.patch', () => {

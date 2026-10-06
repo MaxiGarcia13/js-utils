@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { cn } from './classes.js';
+import { cn } from '../src/classes.js';
 
 it('cn', () => {
   expect(cn('foo', 'bar', 'baz')).toBe('foo bar baz');

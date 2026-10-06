@@ -7,7 +7,7 @@ import {
   isValidHttpUrl,
   pushParamsToUrl,
   removeParamFromUrl,
-} from './url';
+} from '../../src/url/url';
 
 it('getParamsFromUrl', () => {
   const params = getParamsFromUrl('https://example.com?foo=bar&baz=qux');

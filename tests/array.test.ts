@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { uniqueBy } from './array';
+import { uniqueBy } from '../src/array';
 
 describe('uniqueBy', () => {
   it('should return unique items by key', () => {

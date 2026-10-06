@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { capitalize, removeTrailingCommas, unwrapString } from './string.js';
+import { capitalize, removeTrailingCommas, unwrapString } from '../src/string.js';
 
 it('capitalize', () => {
   expect(capitalize('hello')).toBe('Hello');

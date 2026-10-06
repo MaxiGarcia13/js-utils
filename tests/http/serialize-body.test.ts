@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { serializeBodyOptions } from './serialize-body.js';
+import { serializeBodyOptions } from '../../src/http/serialize-body.js';
 
 describe('serializeBodyOptions', () => {
   it('returns empty headers when options are empty', () => {

@@ -7,7 +7,7 @@ import {
   isNetworkError,
   NetworkError,
   throwHttpError,
-} from './http-error.js';
+} from '../../src/http/http-error.js';
 
 describe('isHttpError', () => {
   it('returns true for HttpError instances', () => {

@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { http } from './http.js';
+import { http } from '../../src/http/http.js';
 import { mockFetch } from './http.utils.js';
 
-describe('http.patch', () => {
-  it('sends json body with PATCH method', async () => {
+describe('http.post', () => {
+  it('sends json body with POST method', async () => {
     const fetchMock = mockFetch({
-      json: async () => ({ id: 1, name: 'Patched' }),
+      json: async () => ({ id: 2, name: 'Max' }),
     });
 
-    await expect(http('/api/users/1').patch({
-      body: { name: 'Patched' },
-    })).resolves.toEqual({ id: 1, name: 'Patched' });
+    await expect(http('/api/users').post({
+      body: { name: 'Max' },
+    })).resolves.toEqual({ id: 2, name: 'Max' });
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
-      method: 'PATCH',
-      body: JSON.stringify({ name: 'Patched' }),
+    expect(fetchMock).toHaveBeenCalledWith('/api/users', expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({ name: 'Max' }),
       headers: expect.objectContaining({
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -24,19 +24,19 @@ describe('http.patch', () => {
 
   it('appends params to the url with body', async () => {
     const fetchMock = mockFetch({
-      json: async () => ({ ok: true }),
+      json: async () => ({ id: 3 }),
     });
 
-    await http('/api/users/1').patch({
-      params: { notify: false },
-      body: { name: 'Patched' },
-    });
+    await expect(http('/api/users').post({
+      params: { dryRun: true },
+      body: { name: 'Max' },
+    })).resolves.toEqual({ id: 3 });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/users/1?notify=false',
+      '/api/users?dryRun=true',
       expect.objectContaining({
-        method: 'PATCH',
-        body: JSON.stringify({ name: 'Patched' }),
+        method: 'POST',
+        body: JSON.stringify({ name: 'Max' }),
       }),
     );
     expect(fetchMock.mock.calls[0]?.[1]).not.toHaveProperty('params');
@@ -49,10 +49,10 @@ describe('http.patch', () => {
     const formData = new FormData();
     formData.append('file', 'value');
 
-    await http('/api/upload').patch({ body: formData });
+    await http('/api/upload').post({ body: formData });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
-      method: 'PATCH',
+      method: 'POST',
       body: formData,
       headers: expect.objectContaining({
         Accept: 'application/json',
@@ -67,13 +67,13 @@ describe('http.patch', () => {
     });
     const blob = new Blob(['hello'], { type: 'text/plain' });
 
-    await http('/api/upload').patch({
+    await http('/api/upload').post({
       body: blob,
       headers: { 'Content-Type': 'text/plain' },
     });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
-      method: 'PATCH',
+      method: 'POST',
       body: blob,
       headers: expect.objectContaining({
         'Accept': 'application/json',

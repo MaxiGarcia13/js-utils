@@ -17,7 +17,7 @@ export function http(url: string) {
 
   return {
     get<T>(options: HttpOptions = {}) {
-      return run<T>(options);
+      return run<T>({ ...options, method: 'GET' });
     },
     post<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'POST' });

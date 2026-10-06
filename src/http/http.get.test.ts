@@ -12,6 +12,9 @@ describe('http.get', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       signal: expect.any(AbortSignal),
+      headers: expect.objectContaining({
+        Accept: 'application/json',
+      }),
     }));
   });
 

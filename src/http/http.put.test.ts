@@ -15,7 +15,10 @@ describe('http.put', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PUT',
       body: JSON.stringify({ name: 'Updated' }),
-      headers: { 'Content-Type': 'application/json' },
+      headers: expect.objectContaining({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }),
     }));
   });
 
@@ -51,8 +54,11 @@ describe('http.put', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
       method: 'PUT',
       body: formData,
-      headers: {},
+      headers: expect.objectContaining({
+        Accept: 'application/json',
+      }),
     }));
+    expect(fetchMock.mock.calls[0]?.[1]?.headers).not.toHaveProperty('Content-Type');
   });
 
   it('passes Blob through without stringifying', async () => {
@@ -69,7 +75,10 @@ describe('http.put', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/upload', expect.objectContaining({
       method: 'PUT',
       body: blob,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: expect.objectContaining({
+        'Accept': 'application/json',
+        'Content-Type': 'text/plain',
+      }),
     }));
   });
 });

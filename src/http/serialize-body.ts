@@ -1,4 +1,5 @@
 import type { HttpBody, HttpOptionsWithBody } from './types.js';
+import { toHeadersRecord } from './headers.js';
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
@@ -25,7 +26,7 @@ export function serializeBodyOptions(
     ...(params !== undefined ? { params } : {}),
     headers: {
       ...(typeof serializedBody === 'string' ? DEFAULT_HEADERS : {}),
-      ...headers,
+      ...toHeadersRecord(headers),
     },
     ...(serializedBody !== undefined ? { body: serializedBody } : {}),
   };

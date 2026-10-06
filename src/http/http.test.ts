@@ -18,6 +18,24 @@ describe('http', () => {
     });
   });
 
+  it('returns undefined for 204 responses', async () => {
+    mockFetch({
+      status: 204,
+      text: async () => '',
+    });
+
+    await expect(http('/api/users/1').delete()).resolves.toBeUndefined();
+  });
+
+  it('returns undefined for empty response bodies', async () => {
+    mockFetch({
+      status: 200,
+      text: async () => '',
+    });
+
+    await expect(http('/api/users/1').get()).resolves.toBeUndefined();
+  });
+
   it('abort aborts the request signal', async () => {
     let capturedSignal: AbortSignal | undefined;
 
@@ -27,7 +45,7 @@ describe('http', () => {
         ok: true,
         status: 200,
         statusText: 'OK',
-        json: async () => ({}),
+        text: async () => '{}',
       };
     }));
 
@@ -48,7 +66,7 @@ describe('http', () => {
         ok: true,
         status: 200,
         statusText: 'OK',
-        json: async () => ({ ok: true }),
+        text: async () => JSON.stringify({ ok: true }),
       };
     }));
 

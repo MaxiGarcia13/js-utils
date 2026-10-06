@@ -60,11 +60,36 @@ describe('serializeBodyOptions', () => {
   it('merges custom headers over defaults', () => {
     expect(serializeBodyOptions({
       body: { id: 1 },
-      headers: { Authorization: 'Bearer token', 'Content-Type': 'application/vnd.api+json' },
+      headers: { 'Authorization': 'Bearer token', 'Content-Type': 'application/vnd.api+json' },
     })).toEqual({
       headers: {
         'Content-Type': 'application/vnd.api+json',
-        Authorization: 'Bearer token',
+        'Authorization': 'Bearer token',
+      },
+      body: JSON.stringify({ id: 1 }),
+    });
+  });
+
+  it('accepts Headers instances', () => {
+    const headers = new Headers({ Authorization: 'Bearer token' });
+
+    expect(serializeBodyOptions({ body: { id: 1 }, headers })).toEqual({
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': 'Bearer token',
+      },
+      body: JSON.stringify({ id: 1 }),
+    });
+  });
+
+  it('accepts header entries arrays', () => {
+    expect(serializeBodyOptions({
+      body: { id: 1 },
+      headers: [['Authorization', 'Bearer token']],
+    })).toEqual({
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer token',
       },
       body: JSON.stringify({ id: 1 }),
     });

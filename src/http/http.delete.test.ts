@@ -12,6 +12,9 @@ describe('http.delete', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'DELETE',
+      headers: expect.objectContaining({
+        Accept: 'application/json',
+      }),
     }));
   });
 

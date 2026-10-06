@@ -1,12 +1,12 @@
 # @maxigarcia/js-utils
 
-A small, dependency-free JavaScript/TypeScript utility library for everyday frontend work: arrays, class names, debouncing, deep comparison, storage, text encoding, URL handling, and object helpers. Published as an ES module with TypeScript types.
+A small, dependency-free JavaScript/TypeScript utility library for everyday frontend work: arrays, class names, debouncing, deep comparison, HTTP requests, storage, text encoding, URL handling, and object helpers. Published as an ES module with TypeScript types.
 
 ## What it is
 
-`@maxigarcia/js-utils` bundles helpers you often copy between projects—things like joining conditional CSS classes, debouncing handlers, namespaced `localStorage`, or reading query strings from the current page. Each function lives in its own module, is tree-shakeable via the package entry point, and ships with Vitest coverage.
+`@maxigarcia/js-utils` bundles helpers you often copy between projects—things like joining conditional CSS classes, debouncing handlers, typed `fetch` wrappers, namespaced `localStorage`, or reading query strings from the current page. Each function lives in its own module, is tree-shakeable via the package entry point, and ships with Vitest coverage.
 
-The package targets **browser and Node** environments where the relevant APIs exist (`window`, `URL`, `Storage`, `TextEncoder`, `btoa`/`atob`, etc.). URL helpers that read or mutate the current page default to `window.location.href` when no URL is passed.
+The package targets **browser and Node** environments where the relevant APIs exist (`fetch`, `window`, `URL`, `Storage`, `TextEncoder`, `btoa`/`atob`, etc.). URL helpers that read or mutate the current page default to `window.location.href` when no URL is passed.
 
 ## Install
 
@@ -26,6 +26,7 @@ import {
   deepEqual,
   encodeText,
   getParamFromUrl,
+  http,
   tryParseJson,
   uniqueBy,
 } from '@maxigarcia/js-utils';
@@ -38,6 +39,9 @@ const users = uniqueBy([{ id: 1 }, { id: 2 }, { id: 1 }], 'id');
 const token = encodeText('hello'); // Base64 (UTF-8 safe)
 const page = getParamFromUrl('page');
 const nextUrl = addParamsToUrl('https://example.com', { page: 2, q: 'hello' });
+
+const api = http('/api/users');
+const created = await api.post<{ id: number }>({ body: { name: 'Ada' } });
 
 const preferences = createStorage<{ theme: string }>('preferences');
 preferences.setJson({ theme: 'dark' });
@@ -156,6 +160,37 @@ const url = addParamsToUrl('https://example.com/settings', {
 
 pushParamsToUrl(url);
 ```
+
+### `http`
+
+Creates a small typed client around `fetch` for a base URL. JSON responses are parsed automatically; non-OK responses throw `HttpError`. Plain objects and arrays in `body` are JSON-stringified (with `Content-Type: application/json`); other body types are passed through. Query params use the same shape as `addParamsToUrl`.
+
+```ts
+import { http, isHttpError } from '@maxigarcia/js-utils';
+
+const users = http('/api/users');
+
+const list = await users.get<{ id: number; name: string }[]>({
+  params: { page: 1, q: 'ada' },
+});
+
+const created = await users.post<{ id: number }>({
+  body: { name: 'Ada' },
+});
+
+users.abort(); // cancels in-flight requests from this client
+```
+
+| Method             | Description                                                               |
+| ------------------ | ------------------------------------------------------------------------- |
+| `get(options?)`    | `GET` request; returns parsed JSON (or `undefined` for empty / non-JSON). |
+| `post(options?)`   | `POST` with optional body.                                                |
+| `put(options?)`    | `PUT` with optional body.                                                 |
+| `patch(options?)`  | `PATCH` with optional body.                                               |
+| `delete(options?)` | `DELETE` request.                                                         |
+| `abort()`          | Aborts all in-flight requests started by this client.                     |
+
+Options accept standard `RequestInit` fields (except `method`, `signal`, and `body` shape noted above), plus `params` for query string values. Failed responses throw `HttpError` (`status` + message); network failures throw `NetworkError`; aborted requests throw `AbortRequestError`. Type guards: `isHttpError`, `isNetworkError`, `isAbortRequestError`.
 
 ## Development
 

@@ -37,7 +37,7 @@ describe('http', () => {
     });
 
     await expect(http('/api/users').post({
-      body: JSON.stringify({ name: 'Max' }),
+      body: { name: 'Max' },
     })).resolves.toEqual({ id: 2, name: 'Max' });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users', expect.objectContaining({
@@ -86,7 +86,7 @@ describe('http', () => {
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').put({ body: JSON.stringify({ name: 'Updated' }) });
+    await http('/api/users/1').put({ body: { name: 'Updated' } });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PUT',
@@ -99,7 +99,7 @@ describe('http', () => {
       json: async () => ({ ok: true }),
     });
 
-    await http('/api/users/1').patch({ body: JSON.stringify({ name: 'Patched' }) });
+    await http('/api/users/1').patch({ body: { name: 'Patched' } });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
       method: 'PATCH',

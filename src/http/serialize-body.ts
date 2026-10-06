@@ -1,25 +1,29 @@
-import type { HttpOptionsWithBody } from './type.js';
+import type { HttpBody, HttpOptionsWithBody } from './type.js';
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 } as const;
 
-function shouldSkipJsonContentType(body: RequestInit['body']): boolean {
-  return (
-    (typeof FormData !== 'undefined' && body instanceof FormData)
-    || (typeof Blob !== 'undefined' && body instanceof Blob)
-  );
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return Object.prototype.toString.call(value) === '[object Object]';
+}
+
+function shouldStringify(body: HttpBody): body is Record<string, unknown> | readonly unknown[] {
+  return Array.isArray(body) || isPlainObject(body);
 }
 
 export function serializeBodyOptions(options: HttpOptionsWithBody = {}): RequestInit {
   const { body, headers, ...rest } = options;
+  const serializedBody = body !== undefined && shouldStringify(body)
+    ? JSON.stringify(body)
+    : body;
 
   return {
     ...rest,
     headers: {
-      ...(!shouldSkipJsonContentType(body) ? DEFAULT_HEADERS : {}),
+      ...(typeof serializedBody === 'string' ? DEFAULT_HEADERS : {}),
       ...headers,
     },
-    ...(body !== undefined ? { body } : {}),
+    ...(serializedBody !== undefined ? { body: serializedBody } : {}),
   };
 }

@@ -1,7 +1,8 @@
 import { request } from './request.js';
 
 export function http(url: string) {
-  const { signal, abort } = new AbortController();
+  const abortController = new AbortController();
+  const { signal } = abortController;
 
   return {
     get<T>(options: RequestInit = {}) {
@@ -20,7 +21,7 @@ export function http(url: string) {
       return request<T>(url, signal, { ...options, method: 'PATCH' }, data);
     },
     abort() {
-      abort();
+      abortController.abort();
     },
   };
 }

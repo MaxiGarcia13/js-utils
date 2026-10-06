@@ -1,3 +1,5 @@
+import type { UrlParams } from './types.js';
+
 export function getParamsFromUrl(url: string = window.location.href) {
   return new URLSearchParams(new URL(url).search);
 }
@@ -43,9 +45,7 @@ export function getUrlDomain(url: string): string | null {
   }
 }
 
-type Params = Record<string, string | number | boolean | undefined | null>;
-
-export function addParamsToUrl(baseUrl: string, params: Params = {}) {
+export function addParamsToUrl(baseUrl: string, params: UrlParams = {}) {
   const paramsString = parseParams(params);
 
   if (paramsString) {
@@ -55,7 +55,7 @@ export function addParamsToUrl(baseUrl: string, params: Params = {}) {
   return baseUrl;
 }
 
-function parseParams(params: Params) {
+function parseParams(params: UrlParams) {
   const searchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {

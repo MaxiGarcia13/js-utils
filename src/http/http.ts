@@ -5,7 +5,7 @@ import { serializeBodyOptions } from './serialize-body.js';
 export function http(url: string) {
   const controllers = new Set<AbortController>();
 
-  function run<T>(options: RequestInit = {}) {
+  async function run<T>(options: RequestInit = {}) {
     const controller = new AbortController();
     controllers.add(controller);
 

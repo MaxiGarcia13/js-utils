@@ -1,4 +1,4 @@
-import type { HttpBody, HttpOptionsWithBody } from './type.js';
+import type { HttpBody, HttpOptionsWithBody } from './types.js';
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
@@ -12,14 +12,17 @@ function shouldStringify(body: HttpBody): body is Record<string, unknown> | read
   return Array.isArray(body) || isPlainObject(body);
 }
 
-export function serializeBodyOptions(options: HttpOptionsWithBody = {}): RequestInit {
-  const { body, headers, ...rest } = options;
+export function serializeBodyOptions(
+  options: HttpOptionsWithBody = {},
+): RequestInit & Pick<HttpOptionsWithBody, 'params'> {
+  const { body, headers, params, ...rest } = options;
   const serializedBody = body !== undefined && shouldStringify(body)
     ? JSON.stringify(body)
     : body;
 
   return {
     ...rest,
+    ...(params !== undefined ? { params } : {}),
     headers: {
       ...(typeof serializedBody === 'string' ? DEFAULT_HEADERS : {}),
       ...headers,

@@ -122,11 +122,16 @@ async function* parseSse(body: ReadableStream<Uint8Array> | null) {
   }
 }
 
-export function createHttpStream(url: string, { begin, release }: AbortTracker): StreamMethod {
+export function createHttpStream(getUrl: () => string, { begin, release }: AbortTracker): StreamMethod {
   return ((options: StreamOptions = {}) => {
+    const url = getUrl();
+    if (url.length === 0)
+      throw new Error('URL is not set');
+
     const { format = 'bytes', method = 'GET', ...rest } = options;
     const { params, ...requestInit } = serializeBodyOptions(rest);
     const finalUrl = addParamsToUrl(url, params);
+
     const key = `${method}:${finalUrl}`;
     const controller = begin(key);
 

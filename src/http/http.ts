@@ -1,10 +1,14 @@
 import type { HttpOptions, HttpOptionsWithBody } from './types.js';
+import { requireUrl } from './http-error.js';
 import { createHttpRunners } from './runners.js';
 import { serializeBodyOptions } from './serialize-body.js';
 import { createHttpStream } from './stream.js';
 
-export function http(url: string) {
-  const { run, abort, begin, release } = createHttpRunners(url);
+export function http(baseUrl?: string) {
+  let url = baseUrl ?? '';
+  const getUrl = () => requireUrl(url);
+
+  const { run, abort, begin, release } = createHttpRunners(getUrl);
 
   return {
     get<T>(options: HttpOptions = {}) {
@@ -22,7 +26,10 @@ export function http(url: string) {
     patch<T>(options: HttpOptionsWithBody = {}) {
       return run<T>({ ...serializeBodyOptions(options), method: 'PATCH' });
     },
-    stream: createHttpStream(url, { begin, release }),
+    setUrl(newUrl: string) {
+      url = newUrl;
+    },
+    stream: createHttpStream(getUrl, { begin, release }),
     abort,
   };
 }

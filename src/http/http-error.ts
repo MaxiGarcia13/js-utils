@@ -22,6 +22,13 @@ export class AbortRequestError extends Error {
   }
 }
 
+export class MissingUrlError extends Error {
+  constructor(message = 'URL is not set', options?: ErrorOptions) {
+    super(message, options);
+    this.name = 'MissingUrlError';
+  }
+}
+
 export function isHttpError(error: unknown): error is HttpError {
   return error instanceof HttpError;
 }
@@ -32,6 +39,18 @@ export function isNetworkError(error: unknown): error is NetworkError {
 
 export function isAbortRequestError(error: unknown): error is AbortRequestError {
   return error instanceof AbortRequestError;
+}
+
+export function isMissingUrlError(error: unknown): error is MissingUrlError {
+  return error instanceof MissingUrlError;
+}
+
+export function requireUrl(url: string): string {
+  if (url.length === 0) {
+    throw new MissingUrlError();
+  }
+
+  return url;
 }
 
 export function isAbortError(error: unknown): boolean {

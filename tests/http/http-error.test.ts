@@ -4,11 +4,8 @@ import {
   HttpError,
   isAbortRequestError,
   isHttpError,
-  isMissingUrlError,
   isNetworkError,
-  MissingUrlError,
   NetworkError,
-  requireUrl,
   throwHttpError,
 } from '../../src/http/http-error.js';
 
@@ -50,32 +47,6 @@ describe('isAbortRequestError', () => {
   it('returns false for other errors', () => {
     expect(isAbortRequestError(new HttpError(500, 'fail'))).toBe(false);
     expect(isAbortRequestError(new NetworkError())).toBe(false);
-  });
-});
-
-describe('isMissingUrlError', () => {
-  it('returns true for MissingUrlError instances', () => {
-    expect(isMissingUrlError(new MissingUrlError())).toBe(true);
-  });
-
-  it('returns false for other errors', () => {
-    expect(isMissingUrlError(new HttpError(500, 'fail'))).toBe(false);
-    expect(isMissingUrlError(new NetworkError())).toBe(false);
-  });
-});
-
-describe('requireUrl', () => {
-  it('returns the url when it is set', () => {
-    expect(requireUrl('/api/items')).toBe('/api/items');
-  });
-
-  it('throws MissingUrlError when the url is empty', () => {
-    expect(() => requireUrl('')).toThrowError(
-      expect.objectContaining({
-        name: 'MissingUrlError',
-        message: 'URL is not set',
-      }),
-    );
   });
 });
 

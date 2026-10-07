@@ -7,7 +7,7 @@ export interface AbortTracker {
   release: (key: string, controller: AbortController) => void;
 }
 
-export function createHttpRunners(getUrl: () => string) {
+export function createHttpRunners(url: string) {
   const controllers = new Map<string, AbortController>();
 
   function begin(key: string) {
@@ -28,7 +28,7 @@ export function createHttpRunners(getUrl: () => string) {
     method = 'GET',
     ...options
   }: RequestInit & Pick<HttpOptions, 'params'> = {}) {
-    const finalUrl = addParamsToUrl(getUrl(), params);
+    const finalUrl = addParamsToUrl(url, params);
     const key = `${method}:${finalUrl}`;
     const controller = begin(key);
 

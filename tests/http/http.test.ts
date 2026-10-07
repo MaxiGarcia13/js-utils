@@ -199,5 +199,4 @@ describe('http', () => {
     await first;
     await second;
   });
-
 });

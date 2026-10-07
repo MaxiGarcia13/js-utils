@@ -29,6 +29,9 @@ export function http(baseUrl?: string) {
     setUrl(newUrl: string) {
       url = newUrl;
     },
+    request: <T>(method: string, options: HttpOptionsWithBody = {}) => {
+      return run<T>({ ...serializeBodyOptions(options), method });
+    },
     stream: createHttpStream(getUrl, { begin, release }),
     abort,
   };

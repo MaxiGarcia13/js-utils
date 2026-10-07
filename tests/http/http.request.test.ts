@@ -41,7 +41,7 @@ describe('http.request', () => {
       method,
       body: JSON.stringify(body),
       headers: expect.objectContaining({
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       }),
     }));

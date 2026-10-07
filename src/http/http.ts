@@ -29,7 +29,7 @@ export function http(baseUrl?: string) {
     setUrl(newUrl: string) {
       url = newUrl;
     },
-    request: <T>(method: string, options: HttpOptionsWithBody = {}) => {
+    request: <T>(method: RequestInit['method'], options: HttpOptionsWithBody = {}) => {
       return run<T>({ ...serializeBodyOptions(options), method });
     },
     stream: createHttpStream(getUrl, { begin, release }),

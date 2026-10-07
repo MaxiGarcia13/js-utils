@@ -3,15 +3,21 @@ import { http } from '../../src/http/http.js';
 import { mockFetch } from './http.utils.js';
 
 describe('http.request', () => {
-  it('sends a custom method', async () => {
+  it.each([
+    ['GET'],
+    ['POST'],
+    ['PUT'],
+    ['DELETE'],
+    ['PATCH'],
+  ] as const)('sends %s method', async (method) => {
     const fetchMock = mockFetch({
       json: async () => ({ ok: true }),
     });
 
-    await expect(http('/api/users/1').request('HEAD')).resolves.toEqual({ ok: true });
+    await expect(http('/api/items').request(method)).resolves.toEqual({ ok: true });
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/users/1', expect.objectContaining({
-      method: 'HEAD',
+    expect(fetchMock).toHaveBeenCalledWith('/api/items', expect.objectContaining({
+      method,
       signal: expect.any(AbortSignal),
       headers: expect.objectContaining({
         Accept: 'application/json',
@@ -19,20 +25,23 @@ describe('http.request', () => {
     }));
   });
 
-  it('sends a custom method with json body', async () => {
+  it.each([
+    ['POST'],
+    ['PUT'],
+    ['PATCH'],
+  ] as const)('sends json body with %s method', async (method) => {
     const fetchMock = mockFetch({
       json: async () => ({ id: 1 }),
     });
+    const body = { name: 'Max' };
 
-    await expect(http('/api/reports').request('REPORT', {
-      body: { type: 'summary' },
-    })).resolves.toEqual({ id: 1 });
+    await expect(http('/api/items').request(method, { body })).resolves.toEqual({ id: 1 });
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/reports', expect.objectContaining({
-      method: 'REPORT',
-      body: JSON.stringify({ type: 'summary' }),
+    expect(fetchMock).toHaveBeenCalledWith('/api/items', expect.objectContaining({
+      method,
+      body: JSON.stringify(body),
       headers: expect.objectContaining({
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       }),
     }));
@@ -43,14 +52,14 @@ describe('http.request', () => {
       json: async () => ({ ok: true }),
     });
 
-    await expect(http('/api/users').request('OPTIONS', {
-      params: { verbose: true },
+    await expect(http('/api/items').request('GET', {
+      params: { page: 1 },
     })).resolves.toEqual({ ok: true });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/users?verbose=true',
+      '/api/items?page=1',
       expect.objectContaining({
-        method: 'OPTIONS',
+        method: 'GET',
       }),
     );
     expect(fetchMock.mock.calls[0]?.[1]).not.toHaveProperty('params');

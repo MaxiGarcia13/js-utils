@@ -23,22 +23,47 @@ it('getParamFromUrl', () => {
 });
 
 it('addParamsToUrl', () => {
-  const url = addParamsToUrl(
-    'https://example.com',
-    {
+  expect(addParamsToUrl('https://example.com/', { foo: 'bar' })).toBe(
+    'https://example.com/?foo=bar',
+  );
+
+  expect(
+    addParamsToUrl('https://example.com/?method=UE9TVA%3D%3D', {
+      url: 'aHR0cHM6Ly9leGFtcGxlLnRlc3QvYXBp',
+    }),
+  ).toBe(
+    'https://example.com/?method=UE9TVA%3D%3D&url=aHR0cHM6Ly9leGFtcGxlLnRlc3QvYXBp',
+  );
+
+  expect(addParamsToUrl('https://example.com/?foo=old', { foo: 'new' })).toBe(
+    'https://example.com/?foo=new',
+  );
+
+  expect(addParamsToUrl('/api/users', { page: 1, q: 'max' })).toBe(
+    '/api/users?page=1&q=max',
+  );
+
+  expect(addParamsToUrl('/api/users?page=1', { q: 'max' })).toBe(
+    '/api/users?page=1&q=max',
+  );
+
+  expect(
+    addParamsToUrl('https://example.com/', {
       foo: 'qux',
       baz: 'qux',
       qux: null,
       quux: undefined,
+      empty: '',
+      blank: '   ',
       corge: 0,
       grault: 1,
       garply: true,
       waldo: false,
       fred: 'string',
-    },
+    }),
+  ).toBe(
+    'https://example.com/?foo=qux&baz=qux&corge=0&grault=1&garply=true&waldo=false&fred=string',
   );
-
-  expect(url).toBe('https://example.com?foo=qux&baz=qux&corge=0&grault=1&garply=true&waldo=false&fred=string');
 });
 
 it('removeParamFromUrl', () => {

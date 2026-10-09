@@ -46,17 +46,8 @@ export function getUrlDomain(url: string): string | null {
 }
 
 export function addParamsToUrl(baseUrl: string, params: UrlParams = {}) {
-  const paramsString = parseParams(params);
-
-  if (paramsString) {
-    return `${baseUrl}?${paramsString}`;
-  }
-
-  return baseUrl;
-}
-
-function parseParams(params: UrlParams) {
-  const searchParams = new URLSearchParams();
+  const [path, query = ''] = baseUrl.split('?');
+  const searchParams = new URLSearchParams(query);
 
   for (const [key, value] of Object.entries(params)) {
     const stringValue = value?.toString().trim();
@@ -66,9 +57,6 @@ function parseParams(params: UrlParams) {
     }
   }
 
-  if (searchParams.size > 0) {
-    return searchParams.toString();
-  }
-
-  return null;
+  const nextQuery = searchParams.toString();
+  return nextQuery ? `${path}?${nextQuery}` : path;
 }
